@@ -56,4 +56,9 @@ public class AccountPersistenceAdapter implements AccountRepository {
     public boolean existsByAccountNumber(String accountNumber) {
         return jpaRepository.existsByAccountNumber(accountNumber);
     }
+
+    @Override
+    public long count() {
+        return jpaRepository.count();
+    }
 }

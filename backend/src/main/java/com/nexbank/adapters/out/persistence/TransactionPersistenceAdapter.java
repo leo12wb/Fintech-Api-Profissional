@@ -44,4 +44,9 @@ public class TransactionPersistenceAdapter implements TransactionRepository {
         return new PagedResult<>(result.getContent(), result.getNumber(), result.getSize(),
             result.getTotalElements(), result.getTotalPages());
     }
+
+    @Override
+    public long count() {
+        return jpaRepository.count();
+    }
 }

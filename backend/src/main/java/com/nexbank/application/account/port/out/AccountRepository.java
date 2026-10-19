@@ -12,4 +12,5 @@ public interface AccountRepository {
     List<Account> findByCustomerId(UUID customerId);
     Optional<Account> findByAccountNumber(String accountNumber);
     boolean existsByAccountNumber(String accountNumber);
+    long count();
 }

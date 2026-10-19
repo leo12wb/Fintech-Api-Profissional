@@ -2,10 +2,10 @@ package com.nexbank.adapters.in.web.controller;
 
 import com.nexbank.adapters.in.web.dto.CustomerResponse;
 import com.nexbank.adapters.in.web.mapper.CustomerWebMapper;
+import com.nexbank.application.account.port.out.AccountRepository;
 import com.nexbank.application.customer.port.out.CustomerRepository;
 import com.nexbank.application.shared.PagedResult;
-import com.nexbank.adapters.out.persistence.repository.AccountJpaRepository;
-import com.nexbank.adapters.out.persistence.repository.FinancialTransactionJpaRepository;
+import com.nexbank.application.transaction.port.out.TransactionRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,8 +27,8 @@ public class AdminController {
 
     private final CustomerRepository customerRepository;
     private final CustomerWebMapper customerMapper;
-    private final AccountJpaRepository accountJpaRepository;
-    private final FinancialTransactionJpaRepository transactionJpaRepository;
+    private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
 
     @GetMapping("/customers")
     @Operation(summary = "List all customers paginated (ADMIN only)")
@@ -53,8 +53,8 @@ public class AdminController {
     public Map<String, Long> getStats() {
         return Map.of(
             "totalCustomers", customerRepository.count(),
-            "totalAccounts",  accountJpaRepository.count(),
-            "totalTransactions", transactionJpaRepository.count()
+            "totalAccounts",  accountRepository.count(),
+            "totalTransactions", transactionRepository.count()
         );
     }
 }

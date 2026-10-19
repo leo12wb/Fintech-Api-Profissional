@@ -12,4 +12,5 @@ public interface TransactionRepository {
     Optional<FinancialTransaction> findById(UUID id);
     Optional<FinancialTransaction> findByIdempotencyKey(String key);
     PagedResult<FinancialTransaction> findByAccountId(UUID accountId, Instant from, Instant to, TransactionType type, int page, int size);
+    long count();
 }
