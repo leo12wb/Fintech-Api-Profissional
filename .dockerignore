@@ -1,0 +1,10 @@
+**/.git
+**/.gitignore
+**/target
+**/node_modules
+**/.angular
+**/dist
+**/.env
+**/*.md
+!README.md
+**/logs
