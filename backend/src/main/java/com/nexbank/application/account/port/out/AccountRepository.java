@@ -10,5 +10,6 @@ public interface AccountRepository {
     Optional<Account> findById(UUID id);
     Optional<Account> findByIdWithLock(UUID id); // for pessimistic locking during transfers
     List<Account> findByCustomerId(UUID customerId);
+    Optional<Account> findByAccountNumber(String accountNumber);
     boolean existsByAccountNumber(String accountNumber);
 }

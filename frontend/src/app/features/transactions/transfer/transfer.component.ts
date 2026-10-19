@@ -37,7 +37,7 @@ export class TransferComponent implements OnInit {
     private snackBar: MatSnackBar, private dialog: MatDialog) {
     this.form = this.fb.group({
       sourceAccountId: ['', Validators.required],
-      destinationAccountId: ['', [Validators.required]],
+      destinationAccountNumber: ['', [Validators.required]],
       amount: ['', [Validators.required, Validators.min(0.01)]],
       currency: ['BRL', Validators.required]
     });
@@ -49,8 +49,9 @@ export class TransferComponent implements OnInit {
 
   confirmTransfer(): void {
     if (this.form.invalid) return;
-    const { amount, currency, sourceAccountId, destinationAccountId } = this.form.value;
-    if (sourceAccountId === destinationAccountId) {
+    const { amount, currency, sourceAccountId, destinationAccountNumber } = this.form.value;
+    const sourceAccount = this.accounts.find(a => a.id === sourceAccountId);
+    if (sourceAccount?.accountNumber === destinationAccountNumber) {
       this.error = 'Conta de origem e destino devem ser diferentes.'; return;
     }
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

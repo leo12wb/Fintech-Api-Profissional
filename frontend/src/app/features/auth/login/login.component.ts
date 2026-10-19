@@ -37,7 +37,7 @@ export class LoginComponent {
     if (this.form.invalid) return;
     this.loading = true; this.error = '';
     this.authService.login(this.form.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: (resp) => this.router.navigate([resp.role === 'ADMIN' ? '/admin' : '/dashboard']),
       error: (err: HttpErrorResponse) => {
         this.loading = false;
         this.error = err.error?.detail ?? 'Credenciais inválidas. Tente novamente.';

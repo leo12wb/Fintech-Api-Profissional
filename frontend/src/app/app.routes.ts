@@ -38,7 +38,11 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [authGuard, adminGuard],
-    loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+    loadComponent: () => import('./features/admin/admin-shell/admin-shell.component').then(m => m.AdminShellComponent),
+    children: [
+      { path: '', loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent) },
+      { path: 'customers', loadComponent: () => import('./features/admin/admin-customers/admin-customers.component').then(m => m.AdminCustomersComponent) },
+    ]
   },
   { path: '**', redirectTo: '/dashboard' }
 ];

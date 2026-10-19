@@ -48,6 +48,11 @@ public class AccountPersistenceAdapter implements AccountRepository {
     }
 
     @Override
+    public Optional<Account> findByAccountNumber(String accountNumber) {
+        return jpaRepository.findByAccountNumber(accountNumber).map(mapper::toDomain);
+    }
+
+    @Override
     public boolean existsByAccountNumber(String accountNumber) {
         return jpaRepository.existsByAccountNumber(accountNumber);
     }

@@ -4,11 +4,14 @@ import com.nexbank.adapters.in.web.dto.DepositRequest;
 import com.nexbank.adapters.in.web.dto.TransactionResponse;
 import com.nexbank.adapters.in.web.dto.TransferRequest;
 import com.nexbank.adapters.in.web.mapper.TransactionWebMapper;
+import com.nexbank.application.account.port.out.AccountRepository;
 import com.nexbank.application.transaction.port.in.DepositCommand;
 import com.nexbank.application.transaction.port.in.DepositUseCase;
 import com.nexbank.application.transaction.port.in.TransferCommand;
 import com.nexbank.application.transaction.port.in.TransferUseCase;
+import com.nexbank.domain.account.Account;
 import com.nexbank.domain.shared.Money;
+import com.nexbank.domain.shared.exception.BusinessRuleException;
 import com.nexbank.domain.transaction.FinancialTransaction;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -36,6 +39,7 @@ public class TransactionController {
 
     private final DepositUseCase depositUseCase;
     private final TransferUseCase transferUseCase;
+    private final AccountRepository accountRepository;
     private final TransactionWebMapper transactionMapper;
 
     @PostMapping("/deposits")
@@ -60,9 +64,12 @@ public class TransactionController {
             @RequestHeader("Idempotency-Key") String idempotencyKey,
             @AuthenticationPrincipal Jwt jwt) {
         UUID customerId = UUID.fromString(jwt.getSubject());
+        Account destination = accountRepository.findByAccountNumber(request.destinationAccountNumber())
+            .orElseThrow(() -> new BusinessRuleException("ACCOUNT_NOT_FOUND",
+                "Conta de destino não encontrada: " + request.destinationAccountNumber()));
         Money amount = Money.of(request.amount(), request.currency());
         FinancialTransaction tx = transferUseCase.transfer(
-            new TransferCommand(customerId, request.sourceAccountId(), request.destinationAccountId(),
+            new TransferCommand(customerId, request.sourceAccountId(), destination.getId(),
                 amount, idempotencyKey));
         return transactionMapper.toResponse(tx);
     }

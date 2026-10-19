@@ -17,9 +17,9 @@ public interface FinancialTransactionJpaRepository extends JpaRepository<Financi
     @Query("""
         SELECT t FROM FinancialTransactionJpaEntity t
         WHERE (t.sourceAccountId = :accountId OR t.destinationAccountId = :accountId)
-          AND (:from IS NULL OR t.createdAt >= :from)
-          AND (:to IS NULL OR t.createdAt <= :to)
-          AND (:type IS NULL OR t.type = :type)
+          AND t.createdAt >= COALESCE(:from, t.createdAt)
+          AND t.createdAt <= COALESCE(:to, t.createdAt)
+          AND t.type = COALESCE(:type, t.type)
         ORDER BY t.createdAt DESC
         """)
     Page<FinancialTransactionJpaEntity> findByAccountIdAndFilters(

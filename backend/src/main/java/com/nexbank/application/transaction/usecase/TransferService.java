@@ -58,6 +58,11 @@ public class TransferService implements TransferUseCase {
             throw new BusinessRuleException("ACCESS_DENIED", "Access denied to source account: " + command.sourceAccountId());
         }
 
+        if (destination.belongsTo(command.customerId())) {
+            throw new BusinessRuleException("SELF_TRANSFER_NOT_ALLOWED",
+                "Transferência para conta própria não é permitida.");
+        }
+
         source.assertActive();
         destination.assertActive();
 

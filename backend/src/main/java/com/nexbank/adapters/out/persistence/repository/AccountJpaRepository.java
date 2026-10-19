@@ -12,6 +12,7 @@ import java.util.UUID;
 
 public interface AccountJpaRepository extends JpaRepository<AccountJpaEntity, UUID> {
     List<AccountJpaEntity> findByCustomer_Id(UUID customerId);
+    Optional<AccountJpaEntity> findByAccountNumber(String accountNumber);
     boolean existsByAccountNumber(String accountNumber);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

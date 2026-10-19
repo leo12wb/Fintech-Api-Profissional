@@ -124,6 +124,18 @@ HTTP Request → Use Case → save(Transaction) + save(OutboxEvent[PENDING])  �
 - Node 20 + npm (local frontend development)
 - OpenSSL (to generate RSA keys)
 
+## Credenciais de Desenvolvimento
+
+> **Apenas para uso local — não use em produção.**
+
+| Perfil | Login | Senha | Role |
+|---|---|---|---|
+| Super Admin | `admin` | `Admin@123` | ADMIN |
+
+O admin é inserido diretamente no banco via SQL seed. Acesse o painel em `http://localhost:4200/admin`.
+
+---
+
 ## Quick Start
 
 ```bash
