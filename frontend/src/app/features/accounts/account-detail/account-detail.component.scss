@@ -1,0 +1,11 @@
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.detail-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 24px; }
+.balance-detail-card { background: linear-gradient(135deg, #3f51b5, #1a237e) !important; color: white !important; }
+.balance-amount { font-size: 2rem; font-weight: 700; margin: 8px 0; color: white !important; }
+.detail-label { color: #757575; font-size: 0.875rem; margin: 0; }
+.balance-detail-card .detail-label { color: rgba(255,255,255,0.7) !important; }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
+.status-chip { padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+.status-active { background: #e8f5e9; color: #2e7d32; }
+.action-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 600px) { .detail-grid { grid-template-columns: 1fr; } }

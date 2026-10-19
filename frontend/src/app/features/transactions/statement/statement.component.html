@@ -1,0 +1,64 @@
+<div class="nexbank-container">
+  <div class="page-header">
+    <h1 class="page-title">Extrato</h1>
+    <a mat-button routerLink="/accounts"><mat-icon>arrow_back</mat-icon> Contas</a>
+  </div>
+
+  <app-loading [loading]="loading"></app-loading>
+
+  @if (!loading) {
+    @if (transactions.length === 0) {
+      <mat-card class="nexbank-card empty-state">
+        <mat-card-content>
+          <mat-icon>receipt_long</mat-icon>
+          <p>Nenhuma movimentação encontrada.</p>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <mat-card class="nexbank-card">
+        <table mat-table [dataSource]="transactions" class="full-width">
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let tx">
+              <div class="tx-type-cell">
+                <mat-icon [class]="tx.type === 'DEPOSIT' ? 'text-success' : 'text-danger'">
+                  {{ tx.type === 'DEPOSIT' ? 'arrow_downward' : 'arrow_upward' }}
+                </mat-icon>
+                {{ tx.type === 'DEPOSIT' ? 'Depósito' : tx.type === 'TRANSFER' ? 'Transferência' : 'Estorno' }}
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Valor</th>
+            <td mat-cell *matCellDef="let tx" [class]="tx.type === 'DEPOSIT' ? 'text-success amount-cell' : 'text-danger amount-cell'">
+              {{ tx.type === 'DEPOSIT' ? '+' : '-' }}{{ formatCurrency(tx.amount, tx.currency) }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="direction">
+            <th mat-header-cell *matHeaderCellDef>Conta</th>
+            <td mat-cell *matCellDef="let tx">
+              <span class="account-ref">
+                {{ tx.sourceAccountId ? 'De: ' + tx.sourceAccountId.substring(0, 8) + '...' : '' }}
+                {{ tx.destinationAccountId && tx.type !== 'DEPOSIT' ? 'Para: ' + tx.destinationAccountId.substring(0, 8) + '...' : '' }}
+              </span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let tx">
+              <mat-chip [class]="getStatusClass(tx.status)">{{ tx.status }}</mat-chip>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Data</th>
+            <td mat-cell *matCellDef="let tx" class="text-muted">{{ formatDate(tx.createdAt) }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator [length]="totalElements" [pageSize]="pageSize" [pageSizeOptions]="[10, 20, 50]"
+          (page)="onPageChange($event)" showFirstLastButtons></mat-paginator>
+      </mat-card>
+    }
+  }
+</div>

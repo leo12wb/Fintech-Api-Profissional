@@ -1,0 +1,47 @@
+<div class="register-container">
+  <mat-card class="nexbank-card register-card">
+    <mat-card-header>
+      <div class="register-header">
+        <mat-icon class="bank-icon">account_balance</mat-icon>
+        <h1>Criar Conta</h1>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <app-error-message [message]="error"></app-error-message>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nome completo</mat-label>
+          <input matInput formControlName="name">
+          @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
+            <mat-error>Nome obrigatório</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>E-mail</mat-label>
+          <input matInput type="email" formControlName="email">
+          @if (form.get('email')?.hasError('email') && form.get('email')?.touched) {
+            <mat-error>E-mail inválido</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Login</mat-label>
+          <input matInput formControlName="loginId">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Senha (mínimo 8 caracteres)</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
+            <mat-error>Mínimo 8 caracteres</mat-error>
+          }
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="form.invalid || loading">
+          {{ loading ? 'Cadastrando...' : 'Criar Conta' }}
+        </button>
+      </form>
+      <p class="login-link">Já tem conta? <a routerLink="/login">Entrar</a></p>
+    </mat-card-content>
+  </mat-card>
+</div>

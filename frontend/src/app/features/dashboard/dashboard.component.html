@@ -1,0 +1,97 @@
+<div class="nexbank-container">
+  <div class="disclaimer-banner">
+    ⚠️ Plataforma educacional — não movimenta dinheiro real.
+  </div>
+
+  <app-loading [loading]="loading" message="Carregando..."></app-loading>
+
+  @if (!loading) {
+    <div class="dashboard-header">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="text-muted">Visão geral das suas finanças</p>
+      </div>
+      <div class="header-actions">
+        <a mat-raised-button color="primary" routerLink="/transactions/deposit">
+          <mat-icon>add_circle</mat-icon> Depositar
+        </a>
+        <a mat-raised-button color="accent" routerLink="/transactions/transfer">
+          <mat-icon>swap_horiz</mat-icon> Transferir
+        </a>
+      </div>
+    </div>
+
+    <!-- Total Balance Card -->
+    <mat-card class="nexbank-card balance-card">
+      <mat-card-content>
+        <div class="balance-info">
+          <div>
+            <p class="balance-label">Saldo Total</p>
+            <p class="balance-amount">{{ formatCurrency(totalBalance, 'BRL') }}</p>
+            <p class="text-muted">{{ accounts.length }} conta(s) ativa(s)</p>
+          </div>
+          <mat-icon class="balance-icon">account_balance</mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Accounts Grid -->
+    <h2 class="section-title">Minhas Contas</h2>
+    @if (accounts.length === 0) {
+      <mat-card class="nexbank-card empty-state">
+        <mat-card-content>
+          <mat-icon>account_balance_wallet</mat-icon>
+          <p>Você ainda não tem contas. <a routerLink="/accounts/new">Abrir uma conta</a></p>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <div class="accounts-grid">
+        @for (account of accounts; track account.id) {
+          <mat-card class="nexbank-card account-card" [routerLink]="['/accounts', account.id]">
+            <mat-card-content>
+              <div class="account-header">
+                <mat-icon>credit_card</mat-icon>
+                <span class="account-number">{{ account.accountNumber }}</span>
+              </div>
+              <p class="account-balance">{{ formatCurrency(account.balance, account.currency) }}</p>
+              <div class="account-footer">
+                <span class="currency-badge">{{ account.currency }}</span>
+                <span [class]="'status-badge status-' + account.status.toLowerCase()">{{ account.status }}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+        <mat-card class="nexbank-card account-card add-account" routerLink="/accounts/new">
+          <mat-card-content>
+            <mat-icon>add_circle_outline</mat-icon>
+            <p>Abrir nova conta</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+
+    <!-- Recent Transactions -->
+    @if (recentTransactions.length > 0) {
+      <h2 class="section-title">Últimas Movimentações</h2>
+      <mat-card class="nexbank-card">
+        <mat-card-content>
+          @for (tx of recentTransactions; track tx.id; let last = $last) {
+            <div class="transaction-item">
+              <div class="tx-icon" [class.credit]="!tx.sourceAccountId" [class.debit]="tx.sourceAccountId">
+                <mat-icon>{{ tx.type === 'DEPOSIT' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+              </div>
+              <div class="tx-info">
+                <span class="tx-type">{{ tx.type === 'DEPOSIT' ? 'Depósito' : 'Transferência' }}</span>
+                <span class="tx-date text-muted">{{ formatDate(tx.createdAt) }}</span>
+              </div>
+              <span [class]="tx.type === 'DEPOSIT' ? 'text-success tx-amount' : 'text-danger tx-amount'">
+                {{ tx.type === 'DEPOSIT' ? '+' : '-' }}{{ formatCurrency(tx.amount, tx.currency) }}
+              </span>
+            </div>
+            @if (!last) { <mat-divider></mat-divider> }
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+  }
+</div>

@@ -1,0 +1,54 @@
+<div class="nexbank-container">
+  <div class="page-header">
+    <h1 class="page-title">Minhas Contas</h1>
+    <a mat-raised-button color="primary" routerLink="/accounts/new">
+      <mat-icon>add</mat-icon> Abrir Conta
+    </a>
+  </div>
+
+  <app-loading [loading]="loading"></app-loading>
+
+  @if (!loading) {
+    @if (accounts.length === 0) {
+      <mat-card class="nexbank-card empty-state">
+        <mat-card-content>
+          <mat-icon>account_balance_wallet</mat-icon>
+          <p>Nenhuma conta encontrada.</p>
+          <a mat-raised-button color="primary" routerLink="/accounts/new">Abrir primeira conta</a>
+        </mat-card-content>
+      </mat-card>
+    } @else {
+      <mat-card class="nexbank-card">
+        <table mat-table [dataSource]="accounts" class="full-width">
+          <ng-container matColumnDef="accountNumber">
+            <th mat-header-cell *matHeaderCellDef>Número</th>
+            <td mat-cell *matCellDef="let a"><code>{{ a.accountNumber }}</code></td>
+          </ng-container>
+          <ng-container matColumnDef="currency">
+            <th mat-header-cell *matHeaderCellDef>Moeda</th>
+            <td mat-cell *matCellDef="let a">{{ a.currency }}</td>
+          </ng-container>
+          <ng-container matColumnDef="balance">
+            <th mat-header-cell *matHeaderCellDef>Saldo</th>
+            <td mat-cell *matCellDef="let a" class="balance-cell">{{ formatCurrency(a.balance, a.currency) }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let a">
+              <span [class]="'status-chip status-' + a.status.toLowerCase()">{{ a.status }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let a">
+              <a mat-icon-button [routerLink]="['/accounts', a.id]"><mat-icon>visibility</mat-icon></a>
+              <a mat-icon-button [routerLink]="['/transactions/statement', a.id]"><mat-icon>receipt_long</mat-icon></a>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+        </table>
+      </mat-card>
+    }
+  }
+</div>

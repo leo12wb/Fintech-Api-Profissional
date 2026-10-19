@@ -1,0 +1,23 @@
+<div class="nexbank-container">
+  <h1 class="page-title">Abrir Nova Conta</h1>
+  <mat-card class="nexbank-card" style="max-width: 480px;">
+    <mat-card-content>
+      <app-error-message [message]="error"></app-error-message>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Moeda</mat-label>
+          <mat-select formControlName="currency">
+            <mat-option value="BRL">BRL — Real Brasileiro</mat-option>
+            <mat-option value="USD">USD — Dólar Americano</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="actions">
+          <button mat-button type="button" routerLink="/accounts">Cancelar</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+            {{ loading ? 'Abrindo...' : 'Abrir Conta' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,6 @@
+@if (loading) {
+  <div class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    @if (message) { <p class="loading-message">{{ message }}</p> }
+  </div>
+}

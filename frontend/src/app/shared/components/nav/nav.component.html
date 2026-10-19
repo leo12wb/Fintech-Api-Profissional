@@ -1,0 +1,37 @@
+<mat-toolbar color="primary" class="nexbank-toolbar">
+  <button mat-button routerLink="/dashboard">
+    <mat-icon>account_balance</mat-icon>
+    <span class="brand-name">NexBank</span>
+  </button>
+
+  <span class="spacer"></span>
+
+  <nav class="nav-links">
+    <button mat-button routerLink="/dashboard" routerLinkActive="active-link">
+      <mat-icon>dashboard</mat-icon> Dashboard
+    </button>
+    <button mat-button routerLink="/accounts" routerLinkActive="active-link">
+      <mat-icon>account_balance_wallet</mat-icon> Contas
+    </button>
+    <button mat-button routerLink="/transactions/deposit" routerLinkActive="active-link">
+      <mat-icon>add_circle</mat-icon> Depositar
+    </button>
+    <button mat-button routerLink="/transactions/transfer" routerLinkActive="active-link">
+      <mat-icon>swap_horiz</mat-icon> Transferir
+    </button>
+    @if (authService.isAdmin()) {
+      <button mat-button routerLink="/admin" routerLinkActive="active-link">
+        <mat-icon>admin_panel_settings</mat-icon> Admin
+      </button>
+    }
+  </nav>
+
+  <button mat-icon-button [matMenuTriggerFor]="userMenu">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon> Sair
+    </button>
+  </mat-menu>
+</mat-toolbar>

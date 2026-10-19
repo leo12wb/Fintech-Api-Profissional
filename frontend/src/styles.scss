@@ -1,0 +1,67 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$nexbank-primary: mat.define-palette(mat.$indigo-palette, 600);
+$nexbank-accent: mat.define-palette(mat.$teal-palette, 400);
+$nexbank-warn: mat.define-palette(mat.$red-palette);
+
+$nexbank-theme: mat.define-light-theme((
+  color: (primary: $nexbank-primary, accent: $nexbank-accent, warn: $nexbank-warn),
+  typography: mat.define-typography-config($font-family: 'Inter, sans-serif'),
+  density: 0,
+));
+
+@include mat.all-component-themes($nexbank-theme);
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #f5f7fa;
+  color: #1a1a2e;
+}
+
+.nexbank-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.nexbank-card {
+  border-radius: 12px !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #1a1a2e;
+}
+
+.balance-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3f51b5;
+}
+
+.text-success { color: #2e7d32; }
+.text-danger  { color: #c62828; }
+.text-muted   { color: #757575; }
+
+.chip-completed  { background: #e8f5e9 !important; color: #2e7d32 !important; }
+.chip-pending    { background: #fff8e1 !important; color: #f57f17 !important; }
+.chip-failed     { background: #ffebee !important; color: #c62828 !important; }
+.chip-reversed   { background: #f3e5f5 !important; color: #6a1b9a !important; }
+
+.disclaimer-banner {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  margin-bottom: 16px;
+}

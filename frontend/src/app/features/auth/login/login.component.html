@@ -1,0 +1,41 @@
+<div class="login-container">
+  <mat-card class="nexbank-card login-card">
+    <mat-card-header>
+      <div class="login-header">
+        <mat-icon class="bank-icon">account_balance</mat-icon>
+        <h1>NexBank</h1>
+        <p class="subtitle">Plataforma Bancária Digital — Demo Educacional</p>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="disclaimer-banner">
+        ⚠️ Este sistema não movimenta dinheiro real. É uma demonstração educacional.
+      </div>
+
+      <app-error-message [message]="error"></app-error-message>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Login</mat-label>
+          <input matInput formControlName="loginId" autocomplete="username">
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Senha</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="current-password">
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" class="full-width submit-btn" [disabled]="form.invalid || loading">
+          {{ loading ? 'Entrando...' : 'Entrar' }}
+        </button>
+      </form>
+
+      <p class="register-link">Não tem conta? <a routerLink="/register">Cadastre-se</a></p>
+    </mat-card-content>
+  </mat-card>
+</div>

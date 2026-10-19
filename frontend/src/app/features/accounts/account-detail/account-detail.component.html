@@ -1,0 +1,40 @@
+<div class="nexbank-container">
+  <app-loading [loading]="loading"></app-loading>
+  @if (!loading && account) {
+    <div class="page-header">
+      <h1 class="page-title">Detalhes da Conta</h1>
+      <a mat-button routerLink="/accounts"><mat-icon>arrow_back</mat-icon> Voltar</a>
+    </div>
+    <div class="detail-grid">
+      <mat-card class="nexbank-card balance-detail-card">
+        <mat-card-content>
+          <p class="detail-label">Saldo Disponível</p>
+          <p class="balance-amount">{{ formatCurrency(account.balance, account.currency) }}</p>
+          <p class="text-muted">Conta {{ account.accountNumber }}</p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="nexbank-card">
+        <mat-card-content>
+          <div class="detail-row"><span class="detail-label">Número:</span><code>{{ account.accountNumber }}</code></div>
+          <mat-divider></mat-divider>
+          <div class="detail-row"><span class="detail-label">Moeda:</span><span>{{ account.currency }}</span></div>
+          <mat-divider></mat-divider>
+          <div class="detail-row"><span class="detail-label">Status:</span><span [class]="'status-chip status-' + account.status.toLowerCase()">{{ account.status }}</span></div>
+          <mat-divider></mat-divider>
+          <div class="detail-row"><span class="detail-label">Abertura:</span><span>{{ formatDate(account.openedAt) }}</span></div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="action-buttons">
+      <a mat-raised-button color="primary" routerLink="/transactions/deposit">
+        <mat-icon>add_circle</mat-icon> Depositar
+      </a>
+      <a mat-raised-button color="accent" routerLink="/transactions/transfer">
+        <mat-icon>swap_horiz</mat-icon> Transferir
+      </a>
+      <a mat-stroked-button [routerLink]="['/transactions/statement', account.id]">
+        <mat-icon>receipt_long</mat-icon> Extrato
+      </a>
+    </div>
+  }
+</div>
