@@ -4,7 +4,7 @@ import com.nexbank.adapters.in.web.dto.AuthResponse;
 import com.nexbank.adapters.in.web.dto.CustomerResponse;
 import com.nexbank.adapters.in.web.dto.LoginRequest;
 import com.nexbank.adapters.in.web.dto.RegisterRequest;
-import com.nexbank.adapters.out.security.JwtTokenService;
+import com.nexbank.application.authentication.port.out.TokenService;
 import com.nexbank.application.customer.port.in.RegisterCustomerCommand;
 import com.nexbank.application.customer.port.in.RegisterCustomerUseCase;
 import com.nexbank.application.customer.port.out.CustomerRepository;
@@ -32,7 +32,7 @@ public class AuthController {
     private final RegisterCustomerUseCase registerCustomerUseCase;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenService jwtTokenService;
+    private final TokenService tokenService;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -65,8 +65,8 @@ public class AuthController {
             throw new BusinessRuleException("CUSTOMER_INACTIVE", "Account is not active");
         }
 
-        String accessToken = jwtTokenService.generateAccessToken(customer);
-        String refreshToken = jwtTokenService.generateRefreshToken(customer);
+        String accessToken = tokenService.generateAccessToken(customer);
+        String refreshToken = tokenService.generateRefreshToken(customer);
         long expiresIn = 3600L;
 
         return ResponseEntity.ok(new AuthResponse(

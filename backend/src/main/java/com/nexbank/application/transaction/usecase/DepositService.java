@@ -1,6 +1,7 @@
 package com.nexbank.application.transaction.usecase;
 
 import com.nexbank.application.account.port.out.AccountRepository;
+import com.nexbank.application.shared.port.out.MetricsPort;
 import com.nexbank.application.shared.port.out.OutboxEventRepository;
 import com.nexbank.application.transaction.port.in.DepositCommand;
 import com.nexbank.application.transaction.port.in.DepositUseCase;
@@ -27,6 +28,7 @@ public class DepositService implements DepositUseCase {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final OutboxEventRepository outboxEventRepository;
+    private final MetricsPort metricsPort;
 
     @Override
     @Transactional
@@ -65,7 +67,8 @@ public class DepositService implements DepositUseCase {
         outboxEventRepository.save("Transaction", saved.getId().toString(), "TransactionCompleted",
             "{\"transactionId\":\"" + saved.getId() + "\",\"type\":\"DEPOSIT\",\"accountId\":\"" + command.accountId() + "\"}");
 
-        log.info("Deposit completed: {} {} to account {}", command.amount(), command.accountId());
+        metricsPort.recordDeposit(command.amount());
+        log.info("Deposit completed: {} to account {}", command.amount(), command.accountId());
         return saved;
     }
 }

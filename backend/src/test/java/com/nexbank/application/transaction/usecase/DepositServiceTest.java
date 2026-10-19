@@ -1,6 +1,7 @@
 package com.nexbank.application.transaction.usecase;
 
 import com.nexbank.application.account.port.out.AccountRepository;
+import com.nexbank.application.shared.port.out.MetricsPort;
 import com.nexbank.application.shared.port.out.OutboxEventRepository;
 import com.nexbank.application.transaction.port.in.DepositCommand;
 import com.nexbank.application.transaction.port.out.TransactionRepository;
@@ -34,6 +35,7 @@ class DepositServiceTest {
     @Mock private AccountRepository accountRepository;
     @Mock private TransactionRepository transactionRepository;
     @Mock private OutboxEventRepository outboxEventRepository;
+    @Mock private MetricsPort metricsPort;
     @InjectMocks private DepositService depositService;
 
     private UUID customerId;

@@ -6,7 +6,7 @@ import com.nexbank.domain.account.AccountNumber;
 import com.nexbank.domain.shared.Money;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = {AccountNumber.class, Money.class})
 public interface AccountPersistenceMapper {
 
     @Mapping(target = "accountNumber", expression = "java(AccountNumber.of(entity.getAccountNumber()))")

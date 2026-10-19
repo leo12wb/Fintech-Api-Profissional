@@ -75,6 +75,8 @@ nexbank:
     expiration-ms: ${JWT_EXPIRATION_MS:3600000}
     refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:86400000}
     private-key-location: ${JWT_PRIVATE_KEY_LOCATION:classpath:certs/private.pem}
+  messaging:
+    outbox-poll-interval-ms: ${OUTBOX_POLL_INTERVAL_MS:5000}
 
 logging:
   level:

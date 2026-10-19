@@ -5,7 +5,7 @@ import com.nexbank.domain.shared.Money;
 import com.nexbank.domain.transaction.FinancialTransaction;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = {Money.class})
 public interface TransactionPersistenceMapper {
 
     @Mapping(target = "amount", expression = "java(Money.ofCents(entity.getAmountCents(), entity.getCurrency()))")

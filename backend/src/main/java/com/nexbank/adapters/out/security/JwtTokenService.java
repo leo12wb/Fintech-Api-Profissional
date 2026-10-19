@@ -1,6 +1,7 @@
 package com.nexbank.adapters.out.security;
 
 import com.nexbank.adapters.out.configuration.AppProperties;
+import com.nexbank.application.authentication.port.out.TokenService;
 import com.nexbank.domain.customer.Customer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class JwtTokenService {
+public class JwtTokenService implements TokenService {
 
     private final JwtEncoder jwtEncoder;
     private final AppProperties appProperties;
