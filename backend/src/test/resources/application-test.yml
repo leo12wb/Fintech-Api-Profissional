@@ -1,0 +1,26 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+  flyway:
+    enabled: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+nexbank:
+  cors:
+    allowed-origins:
+      - http://localhost:4200
+  jwt:
+    expiration-ms: 3600000
+    refresh-expiration-ms: 86400000
+
+logging:
+  level:
+    com.nexbank: DEBUG
+    org.springframework.security: WARN
+    org.testcontainers: WARN
