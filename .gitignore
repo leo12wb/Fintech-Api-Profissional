@@ -2,6 +2,7 @@
 # NexBank — Root .gitignore
 # ============================================================
 projeto.md
+TASK.md
 
 # --- Java / Maven ---
 target/

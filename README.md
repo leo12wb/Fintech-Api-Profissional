@@ -2,59 +2,68 @@
 
 > **Educational Project — Does not handle real money**
 
-A full-stack fintech demo platform built with Java 21 + Spring Boot 3, Angular 18, PostgreSQL 16, RabbitMQ, and Docker Compose — demonstrating production-grade patterns such as Hexagonal Architecture, JWT (RS256), the Transactional Outbox pattern, idempotency keys, and observability with Prometheus.
+![CI](https://github.com/your-org/nexbank/actions/workflows/ci.yml/badge.svg)
+
+A full-stack fintech demo platform built with **Java 21 + Spring Boot 3**, **Angular 18**, **PostgreSQL 16**, **RabbitMQ**, and **Docker Compose** — demonstrating production-grade patterns: Hexagonal Architecture, JWT (RS256), Transactional Outbox, idempotency keys, Micrometer metrics, and Testcontainers-based integration testing.
 
 ---
 
-## Overview
-
-NexBank simulates a digital bank with customer onboarding, account management, and financial transactions (deposits and transfers). The project exists purely for educational and portfolio purposes.
-
 ## Features
 
-- Customer registration and authentication (JWT RS256)
-- Account creation and management
-- Deposits and peer-to-peer transfers
-- Idempotency guarantees on all write operations
-- Transactional Outbox pattern for reliable event publishing
-- Optimistic locking on account balance updates
-- Prometheus metrics and Spring Actuator health endpoints
+- Customer registration and JWT authentication (RS256)
+- Account creation and management (multi-currency ready)
+- Deposits and peer-to-peer transfers with idempotency guarantees
+- Optimistic locking on account balance updates (`@Version`)
+- Transactional Outbox pattern — reliable event publishing to RabbitMQ
+- Notification event consumers (TransactionCompleted, AccountCreated)
+- Custom Prometheus metrics (`nexbank_transactions_total`, `nexbank_transaction_amount_cents`)
+- Custom health indicator for outbox backlog (`/actuator/health/outbox`)
 - Flyway database migrations
 - Full OpenAPI / Swagger documentation
+- Angular 18 frontend with Angular Material (lazy loading, guards, interceptors)
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Backend | Java 21, Spring Boot 3.3.5 |
-| Frontend | Angular 18, TypeScript |
-| Database | PostgreSQL 16, Flyway |
-| Messaging | RabbitMQ 3.13 |
+| Backend | Java 21, Spring Boot 3.3.5, Maven |
+| Frontend | Angular 18.2, TypeScript strict, Angular Material 18.2 |
+| Database | PostgreSQL 16, Flyway, JPA / Hibernate |
+| Messaging | RabbitMQ 3.13, Spring AMQP |
 | Security | Spring Security, OAuth2 Resource Server, JWT RS256 |
-| Observability | Micrometer, Prometheus |
+| Observability | Micrometer, Prometheus, Spring Actuator |
 | API Docs | SpringDoc OpenAPI (Swagger UI) |
+| Testing | JUnit 5, Mockito, Testcontainers, ArchUnit, JaCoCo |
 | Containerization | Docker, Docker Compose |
 | CI | GitHub Actions |
 
 ## Architecture
 
-The backend follows **Hexagonal Architecture (Ports and Adapters)**:
+The backend follows **Hexagonal Architecture (Ports and Adapters)**, enforced at build time by ArchUnit:
 
 ```
 com.nexbank/
-├── domain/           # Pure domain — no framework dependencies
-│   ├── account/
-│   ├── customer/
-│   ├── transaction/
-│   └── shared/
-├── application/      # Use cases + port interfaces
-│   ├── account/
-│   ├── transaction/
-│   ├── authentication/
-│   └── notification/
-└── adapters/         # Framework-specific implementations
-    ├── in/           # Driving adapters (Web controllers, Messaging listeners)
-    └── out/          # Driven adapters (Persistence, Messaging publishers, Security)
+├── domain/            # Pure business logic — no Spring/JPA dependencies
+│   ├── account/       #   Account, AccountNumber, Money, Currency
+│   ├── customer/      #   Customer, enums
+│   ├── transaction/   #   FinancialTransaction, enums
+│   └── shared/        #   Money (value object), exceptions
+├── application/       # Use cases + port interfaces
+│   ├── account/       #   OpenAccount, GetAccount
+│   ├── transaction/   #   Deposit, Transfer, GetStatement
+│   ├── customer/      #   RegisterCustomer, GetCustomer
+│   ├── authentication/#   TokenService port
+│   └── shared/        #   OutboxEventRepository, MetricsPort
+└── adapters/
+    ├── in/
+    │   ├── web/       #   REST controllers, DTOs, filters, exception handler
+    │   └── messaging/ #   RabbitMQ consumers (NotificationConsumer)
+    └── out/
+        ├── persistence/  #  JPA entities, repositories, MapStruct mappers
+        ├── messaging/    #  OutboxPoller (@Scheduled)
+        ├── security/     #  JwtTokenService, BcryptPasswordEncoderAdapter
+        ├── metrics/      #  MicrometerMetricsAdapter
+        └── configuration/#  SecurityConfig, RabbitMqConfig, AppProperties, ...
 ```
 
 ### Architecture Diagram
@@ -63,7 +72,7 @@ com.nexbank/
 graph TD
     subgraph Driving["Driving Adapters (in)"]
         WEB[REST Controllers]
-        MSG_IN[RabbitMQ Listeners]
+        MSG_IN[RabbitMQ Consumers]
     end
 
     subgraph Application["Application Layer"]
@@ -73,15 +82,16 @@ graph TD
     end
 
     subgraph Domain["Domain"]
-        ENT[Entities]
-        VO[Value Objects]
+        ENT[Account / Customer / Transaction]
+        VO[Money / AccountNumber]
         RULES[Business Rules]
     end
 
     subgraph Driven["Driven Adapters (out)"]
         DB[PostgreSQL / JPA]
-        MSG_OUT[RabbitMQ Publishers]
-        SEC[Security / JWT]
+        MQ[RabbitMQ / OutboxPoller]
+        SEC[JWT / BCrypt]
+        MET[Micrometer / Prometheus]
     end
 
     WEB --> PORT_IN
@@ -90,15 +100,28 @@ graph TD
     UC --> ENT
     UC --> PORT_OUT
     PORT_OUT --> DB
-    PORT_OUT --> MSG_OUT
+    PORT_OUT --> MQ
     PORT_OUT --> SEC
+    PORT_OUT --> MET
+```
+
+### Transactional Outbox Flow
+
+```
+HTTP Request → Use Case → save(Transaction) + save(OutboxEvent[PENDING])  ← same DB tx
+                                                        ↓
+                                           OutboxPoller (@Scheduled 5s)
+                                                        ↓
+                                        RabbitMQ: nexbank.events exchange
+                                                        ↓
+                                          NotificationConsumer (log / notify)
 ```
 
 ## Prerequisites
 
 - Docker 24+ and Docker Compose v2
-- Java 21 (for local development without Docker)
-- Node 20 + npm (for local frontend development)
+- Java 21 (local development)
+- Node 20 + npm (local frontend development)
 - OpenSSL (to generate RSA keys)
 
 ## Quick Start
@@ -108,8 +131,9 @@ graph TD
 git clone https://github.com/your-org/nexbank.git
 cd nexbank
 
-# 2. Copy environment file and review values
+# 2. Copy environment file and set secrets
 cp .env.example .env
+# Edit .env and set POSTGRES_PASSWORD, RABBITMQ_PASSWORD, and JWT secret values
 
 # 3. Generate RSA key pair for JWT
 cd backend && ./scripts/generate-keys.sh && cd ..
@@ -119,64 +143,93 @@ docker compose up -d
 
 # 5. Check health
 docker compose ps
+curl http://localhost:8080/actuator/health
 ```
 
-## Environment Variables
+## Local Development (without Docker)
 
-See [`.env.example`](.env.example) for all available variables and their descriptions.
+```bash
+# Start infrastructure only
+docker compose up -d postgres rabbitmq
 
-| Variable | Description | Default |
-|---|---|---|
-| `POSTGRES_DB` | Database name | `nexbank` |
-| `POSTGRES_USER` | Database user | `nexbank_user` |
-| `POSTGRES_PASSWORD` | Database password | — |
-| `JWT_EXPIRATION_MS` | Access token TTL (ms) | `3600000` (1h) |
-| `JWT_REFRESH_EXPIRATION_MS` | Refresh token TTL (ms) | `86400000` (24h) |
-| `CORS_ALLOWED_ORIGINS` | Allowed CORS origins | `http://localhost:4200` |
-| `RABBITMQ_USER` | RabbitMQ username | `nexbank_rabbit` |
-| `RABBITMQ_PASSWORD` | RabbitMQ password | — |
+# Backend
+cd backend
+export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/nexbank
+export SPRING_DATASOURCE_USERNAME=nexbank_user
+export SPRING_DATASOURCE_PASSWORD=nexbank_pass
+./scripts/generate-keys.sh
+mvn spring-boot:run
+
+# Frontend (separate terminal)
+cd frontend
+npm install
+npm start   # proxies /api → localhost:8080
+```
 
 ## Running Tests
 
 ```bash
-# Backend unit + integration tests
+# Backend — all tests (unit + integration via Testcontainers)
 cd backend
 mvn verify
 
-# Frontend tests
-cd frontend
-npm test
+# Backend — unit tests only (no Docker required)
+cd backend
+mvn test -Dtest="!*IntegrationTest"
 
-# Frontend linting
+# Frontend — lint + build
 cd frontend
 npm run lint
+npm run build -- --configuration production
 ```
 
-## API Documentation
+## Environment Variables
+
+See [`.env.example`](.env.example) for all variables.
+
+| Variable | Description | Default |
+|---|---|---|
+| `POSTGRES_PASSWORD` | Database password | — (required) |
+| `RABBITMQ_USER` | RabbitMQ username | `nexbank_rabbit` |
+| `RABBITMQ_PASSWORD` | RabbitMQ password | — (required) |
+| `JWT_EXPIRATION_MS` | Access token TTL | `3600000` (1 h) |
+| `JWT_REFRESH_EXPIRATION_MS` | Refresh token TTL | `86400000` (24 h) |
+| `CORS_ALLOWED_ORIGINS` | Allowed CORS origins | `http://localhost:4200` |
+| `OUTBOX_POLL_INTERVAL_MS` | Outbox polling interval | `5000` (5 s) |
+
+## API Endpoints
+
+| Resource | Method | Path | Auth |
+|---|---|---|---|
+| Register | POST | `/api/v1/auth/register` | Public |
+| Login | POST | `/api/v1/auth/login` | Public |
+| Open account | POST | `/api/v1/accounts` | JWT |
+| Get account | GET | `/api/v1/accounts/{id}` | JWT |
+| Get balance | GET | `/api/v1/accounts/{id}/balance` | JWT |
+| Deposit | POST | `/api/v1/transactions/deposit` | JWT + Idempotency-Key |
+| Transfer | POST | `/api/v1/transactions/transfer` | JWT + Idempotency-Key |
+| Statement | GET | `/api/v1/transactions/statement/{accountId}` | JWT |
+| My profile | GET | `/api/v1/customers/me` | JWT |
+
+## Observability Endpoints
 
 | Resource | URL |
 |---|---|
 | Swagger UI | http://localhost:8080/swagger-ui.html |
 | OpenAPI JSON | http://localhost:8080/api-docs |
 | Actuator Health | http://localhost:8080/actuator/health |
-
-## Local URLs
-
-| Service | URL |
-|---|---|
-| Backend API | http://localhost:8080 |
-| Swagger UI | http://localhost:8080/swagger-ui.html |
+| Outbox Health | http://localhost:8080/actuator/health/outbox |
+| Prometheus Metrics | http://localhost:8080/actuator/prometheus |
 | RabbitMQ Management | http://localhost:15672 |
 | Prometheus | http://localhost:9090 |
 | Frontend | http://localhost:4200 |
 
-## Known Limitations
+### Custom Metrics
 
-- This is an educational demo — **do not use in production**.
-- No real payment gateway integration.
-- RSA private key for JWT is stored locally; use Docker secrets or a vault in production.
-- Rate limiting is not implemented in this phase.
-- Frontend is a placeholder until Phase 4.
+| Metric | Labels | Description |
+|---|---|---|
+| `nexbank_transactions_total` | `type=deposit\|transfer` | Count of completed transactions |
+| `nexbank_transaction_amount_cents` | `type=deposit\|transfer` | Distribution of transaction amounts (cents) |
 
 ## License
 

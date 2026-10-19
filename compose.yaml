@@ -1,12 +1,10 @@
-version: "3.8"
-
 networks:
   nexbank-net:
     driver: bridge
-    internal: false
 
 volumes:
   postgres-data:
+  rabbitmq-data:
 
 services:
 
@@ -39,6 +37,8 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -63,6 +63,8 @@ services:
       rabbitmq:
         condition: service_healthy
     env_file: .env
+    environment:
+      OUTBOX_POLL_INTERVAL_MS: ${OUTBOX_POLL_INTERVAL_MS:-5000}
     ports:
       - "8080:8080"
     healthcheck:
