@@ -2,7 +2,33 @@
 
 > **Educational Project — Does not handle real money**
 
-![CI](https://github.com/your-org/nexbank/actions/workflows/ci.yml/badge.svg)
+<p align="center">
+  <a href="README.md">🇺🇸 English</a> ·
+  <a href="README.pt.md">🇧🇷 Português</a> ·
+  <a href="README.fr.md">🇫🇷 Français</a>
+</p>
+
+---
+
+<p align="center">
+
+[![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3.5-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Angular](https://img.shields.io/badge/Angular-18.2-DD0031?logo=angular&logoColor=white)](https://angular.io/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![RabbitMQ](https://img.shields.io/badge/RabbitMQ-3.13-FF6600?logo=rabbitmq&logoColor=white)](https://www.rabbitmq.com/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![Maven](https://img.shields.io/badge/Maven-3.9-C71A36?logo=apachemaven&logoColor=white)](https://maven.apache.org/)
+[![JWT](https://img.shields.io/badge/JWT-RS256-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-Micrometer-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![Flyway](https://img.shields.io/badge/Flyway-Migrations-CC0200?logo=flyway&logoColor=white)](https://flywaydb.org/)
+[![JaCoCo](https://img.shields.io/badge/Coverage-JaCoCo-brightgreen)](https://www.jacoco.org/)
+[![Testcontainers](https://img.shields.io/badge/Tests-Testcontainers-1D63ED?logo=docker&logoColor=white)](https://testcontainers.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/your-org/nexbank/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/nexbank/actions)
+
+</p>
 
 A full-stack fintech demo platform built with **Java 21 + Spring Boot 3**, **Angular 18**, **PostgreSQL 16**, **RabbitMQ**, and **Docker Compose** — demonstrating production-grade patterns: Hexagonal Architecture, JWT (RS256), Transactional Outbox, idempotency keys, Micrometer metrics, and Testcontainers-based integration testing.
 
@@ -21,6 +47,7 @@ A full-stack fintech demo platform built with **Java 21 + Spring Boot 3**, **Ang
 - Flyway database migrations
 - Full OpenAPI / Swagger documentation
 - Angular 18 frontend with Angular Material (lazy loading, guards, interceptors)
+- Admin panel with separate layout, stats dashboard and customer management
 
 ## Tech Stack
 
@@ -124,15 +151,15 @@ HTTP Request → Use Case → save(Transaction) + save(OutboxEvent[PENDING])  �
 - Node 20 + npm (local frontend development)
 - OpenSSL (to generate RSA keys)
 
-## Credenciais de Desenvolvimento
+## Development Credentials
 
-> **Apenas para uso local — não use em produção.**
+> **For local use only — never use in production.**
 
-| Perfil | Login | Senha | Role |
+| Profile | Login | Password | Role |
 |---|---|---|---|
 | Super Admin | `admin` | `Admin@123` | ADMIN |
 
-O admin é inserido diretamente no banco via SQL seed. Acesse o painel em `http://localhost:4200/admin`.
+The admin user is seeded directly into the database via SQL. Access the panel at `http://localhost:4200/admin`.
 
 ---
 
@@ -148,7 +175,10 @@ cp .env.example .env
 # Edit .env and set POSTGRES_PASSWORD, RABBITMQ_PASSWORD, and JWT secret values
 
 # 3. Generate RSA key pair for JWT
-cd backend && ./scripts/generate-keys.sh && cd ..
+cd backend/src/main/resources/certs
+openssl genrsa -out private.pem 2048
+openssl rsa -in private.pem -pubout -out public.pem
+cd ../../../../../../
 
 # 4. Start all services
 docker compose up -d
@@ -169,7 +199,6 @@ cd backend
 export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/nexbank
 export SPRING_DATASOURCE_USERNAME=nexbank_user
 export SPRING_DATASOURCE_PASSWORD=nexbank_pass
-./scripts/generate-keys.sh
 mvn spring-boot:run
 
 # Frontend (separate terminal)
@@ -218,10 +247,12 @@ See [`.env.example`](.env.example) for all variables.
 | Open account | POST | `/api/v1/accounts` | JWT |
 | Get account | GET | `/api/v1/accounts/{id}` | JWT |
 | Get balance | GET | `/api/v1/accounts/{id}/balance` | JWT |
-| Deposit | POST | `/api/v1/transactions/deposit` | JWT + Idempotency-Key |
-| Transfer | POST | `/api/v1/transactions/transfer` | JWT + Idempotency-Key |
-| Statement | GET | `/api/v1/transactions/statement/{accountId}` | JWT |
+| Deposit | POST | `/api/v1/transactions/deposits` | JWT + Idempotency-Key |
+| Transfer | POST | `/api/v1/transactions/transfers` | JWT + Idempotency-Key |
+| Statement | GET | `/api/v1/accounts/{id}/statement` | JWT |
 | My profile | GET | `/api/v1/customers/me` | JWT |
+| List customers | GET | `/api/v1/admin/customers` | JWT + ADMIN |
+| Platform stats | GET | `/api/v1/admin/stats` | JWT + ADMIN |
 
 ## Observability Endpoints
 
@@ -235,6 +266,7 @@ See [`.env.example`](.env.example) for all variables.
 | RabbitMQ Management | http://localhost:15672 |
 | Prometheus | http://localhost:9090 |
 | Frontend | http://localhost:4200 |
+| Admin Panel | http://localhost:4200/admin |
 
 ### Custom Metrics
 
