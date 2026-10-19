@@ -26,7 +26,7 @@
 [![JaCoCo](https://img.shields.io/badge/Cobertura-JaCoCo-brightgreen)](https://www.jacoco.org/)
 [![Testcontainers](https://img.shields.io/badge/Testes-Testcontainers-1D63ED?logo=docker&logoColor=white)](https://testcontainers.com/)
 [![License](https://img.shields.io/badge/Licença-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI](https://github.com/your-org/nexbank/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/nexbank/actions)
+[![CI](https://github.com/leo12wb/Fintech-Api-Profissional/actions/workflows/ci.yml/badge.svg)](https://github.com/leo12wb/Fintech-Api-Profissional/actions)
 
 </p>
 
@@ -167,7 +167,7 @@ O admin é inserido diretamente no banco via seed SQL. Acesse o painel em `http:
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/your-org/nexbank.git
+git clone https://github.com/leo12wb/Fintech-Api-Profissional.git
 cd nexbank
 
 # 2. Copie o arquivo de ambiente e configure os segredos

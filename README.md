@@ -26,7 +26,7 @@
 [![JaCoCo](https://img.shields.io/badge/Coverage-JaCoCo-brightgreen)](https://www.jacoco.org/)
 [![Testcontainers](https://img.shields.io/badge/Tests-Testcontainers-1D63ED?logo=docker&logoColor=white)](https://testcontainers.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI](https://github.com/your-org/nexbank/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/nexbank/actions)
+[![CI](https://github.com/leo12wb/Fintech-Api-Profissional/actions/workflows/ci.yml/badge.svg)](https://github.com/leo12wb/Fintech-Api-Profissional/actions)
 
 </p>
 
@@ -167,7 +167,7 @@ The admin user is seeded directly into the database via SQL. Access the panel at
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-org/nexbank.git
+git clone https://github.com/leo12wb/Fintech-Api-Profissional.git
 cd nexbank
 
 # 2. Copy environment file and set secrets
